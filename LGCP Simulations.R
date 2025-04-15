@@ -4,6 +4,7 @@ library(terra)
 library(spatstat)
 library(scampr)
 library(dplyr)
+library(qs)
 
 # #Load boundary
 # cape_town <- st_read(here("sa_census_2011_cape_town_sp_gis_data",
@@ -33,7 +34,7 @@ parameter_space <- list(beta_0 = c(-12, -13, -14),
 
 set.seed(123)
 
-source("parameter sampling.R")
+source(here("Helper functions", "parameter sampling.R"))
 
 parameters <- parameter_sample(df = parameter_space, size = 500)
 
