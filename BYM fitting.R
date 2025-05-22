@@ -97,10 +97,7 @@ bym_models_sp <- lapply(sim_aggregated_list_sp, function(X) {
     inla(
       counts ~ fac_dist + f(ID, model = "bym2", graph = g_sp),
       family = "poisson",
-      data = X, E = pop_density,
-      control.predictor = list(compute = TRUE),
-      control.compute = list(dic = TRUE, waic = TRUE)
-    )
+      data = X, E = pop_density)
   }, error = function(e1) {
     message("INLA failed: ", conditionMessage(e1), " -- trying again with different priors")
 
@@ -108,10 +105,7 @@ bym_models_sp <- lapply(sim_aggregated_list_sp, function(X) {
       inla(
         counts ~ fac_dist + f(ID, model = "bym2", graph = g_sp, hyper = prior_list),
         family = "poisson",
-        data = X, E = pop_density,
-        control.predictor = list(compute = TRUE),
-        control.compute = list(dic = TRUE, waic = TRUE)
-      )
+        data = X, E = pop_density)
     }, error = function(e2) {
       message("INLA failed with different priors: ", conditionMessage(e2),
               " -- trying with different BYM specification")
@@ -120,10 +114,7 @@ bym_models_sp <- lapply(sim_aggregated_list_sp, function(X) {
         inla(
           counts ~ fac_dist + f(ID, model = "bym", graph = g_sp),
           family = "poisson",
-          data = X, E = pop_density,
-          control.predictor = list(compute = TRUE),
-          control.compute = list(dic = TRUE, waic = TRUE)
-        )
+          data = X, E = pop_density)
       }, error = function(e3) {
         message("INLA failed again: ", conditionMessage(e3))
         return(NA)
@@ -151,10 +142,6 @@ bym_models_sp <- lapply(sim_aggregated_list_sp, function(X) {
 #   })
 # })
 
-bym_mod <- S.CARbym(
-  form, family = "poisson",
-  data = sim_aggregated_list_sp[[1]], n.sample = 15000, burnin = 5000, thin = 50,
-  W = W_mat_sp)
 
 #### Fit BYM models for main-place boundaries ####
 W_nb_mp <- poly2nb(cape_town_mp)
@@ -178,6 +165,7 @@ bym_models_mp <- lapply(sim_aggregated_list_mp, function(X) {
   })
 
 })
+
 
 #Extract the estimated fixed effects parameters (betas)
 
@@ -275,3 +263,5 @@ result_tab <- data.frame(Bias = c(bias_b0_sp, bias_b1_sp, bias_b0_mp, bias_b1_mp
                          coverage = c(cov_b0_sp, cov_b1_sp, cov_b0_mp, cov_b1_mp))
 row.names(result_tab) <- c("b0_sp", "b1_sp", "b0_mp", "b1_mp")
 
+# qs_savem(betas_sp, betas_mp, ci_b0_sp, ci_b0_mp, ci_b1_sp, ci_b1_mp,
+#          file = here("BYM model results/BYM results.qs2"))
