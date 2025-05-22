@@ -133,23 +133,23 @@ bym_models_sp <- lapply(sim_aggregated_list_sp, function(X) {
   })
 })
 
-form <- counts ~ fac_dist + offset(log(pop_density))
-
-bym_models_sp_alt <- lapply(sim_aggregated_list_sp, function(X) {
-
-  tryCatch({
-    bym_mod <- S.CARbym(
-      form, family = "poisson",
-      data = X, n.sample = 15000, burnin = 5000, thin = 50,
-      W = W_mat_sp)
-
-    return(bym_mod)
-  },
-  error = function(e) {
-    message("Error: ", conditionMessage(e))
-    return(NA)
-  })
-})
+# form <- counts ~ fac_dist + offset(log(pop_density))
+#
+# bym_models_sp_alt <- lapply(sim_aggregated_list_sp, function(X) {
+#
+#   tryCatch({
+#     bym_mod <- S.CARbym(
+#       form, family = "poisson",
+#       data = X, n.sample = 15000, burnin = 5000, thin = 50,
+#       W = W_mat_sp)
+#
+#     return(bym_mod)
+#   },
+#   error = function(e) {
+#     message("Error: ", conditionMessage(e))
+#     return(NA)
+#   })
+# })
 
 bym_mod <- S.CARbym(
   form, family = "poisson",
