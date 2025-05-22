@@ -229,7 +229,7 @@ rmse_b1_mp <- sqrt(mean((parameters$beta_1 - betas_mp$b1_mp)^2))
 rmse_b0_sp <- sqrt(mean((parameters$beta_0 - betas_sp$b0_sp)^2))
 rmse_b1_sp <- sqrt(mean((parameters$beta_1 - betas_sp$b1_sp)^2))
 
-#Coverage
+#Coverage sub-place
 ci_b0_sp <- lapply(bym_models_sp, function(X){
 
   as.data.frame(cbind(low_ci_sp = X$summary.fixed$`0.025quant`[1],
@@ -237,7 +237,7 @@ ci_b0_sp <- lapply(bym_models_sp, function(X){
 }) |>
   Reduce(f = rbind)
 
-cov_b0 <- sum(between(parameters$beta_0, ci_b0_sp$low_ci_sp, ci_b0_sp$high_ci_sp))
+cov_b0_sp <- sum(between(parameters$beta_0, ci_b0_sp$low_ci_sp, ci_b0_sp$high_ci_sp))
 
 
 ci_b1_sp <- lapply(bym_models_sp, function(X){
@@ -247,5 +247,31 @@ ci_b1_sp <- lapply(bym_models_sp, function(X){
 }) |>
   Reduce(f = rbind)
 
-cov_b1 <- mean(between(parameters$beta_1, ci_b1_sp$low_ci_sp, ci_b1_sp$high_ci_sp))
+cov_b1_sp <- mean(between(parameters$beta_1, ci_b1_sp$low_ci_sp, ci_b1_sp$high_ci_sp))
+
+
+#Coverage (main place)
+ci_b0_mp <- lapply(bym_models_mp, function(X){
+
+  as.data.frame(cbind(low_ci_mp = X$summary.fixed$`0.025quant`[1],
+                      high_ci_mp = X$summary.fixed$`0.975quant`[1]))
+}) |>
+  Reduce(f = rbind)
+
+cov_b0_mp <- sum(between(parameters$beta_0, ci_b0_mp$low_ci_mp, ci_b0_mp$high_ci_mp))
+
+
+ci_b1_mp <- lapply(bym_models_mp, function(X){
+
+  as.data.frame(cbind(low_ci_mp = X$summary.fixed$`0.025quant`[2],
+                      high_ci_mp = X$summary.fixed$`0.975quant`[2]))
+}) |>
+  Reduce(f = rbind)
+
+cov_b1_mp <- mean(between(parameters$beta_1, ci_b1_mp$low_ci_mp, ci_b1_mp$high_ci_mp))
+
+result_tab <- data.frame(Bias = c(bias_b0_sp, bias_b1_sp, bias_b0_mp, bias_b1_mp),
+                         RMSE = c(rmse_b0_sp, rmse_b1_sp, rmse_b0_mp, rmse_b1_mp),
+                         coverage = c(cov_b0_sp, cov_b1_sp, cov_b0_mp, cov_b1_mp))
+row.names(result_tab) <- c("b0_sp", "b1_sp", "b0_mp", "b1_mp")
 
