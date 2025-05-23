@@ -263,5 +263,7 @@ result_tab <- data.frame(Bias = c(bias_b0_sp, bias_b1_sp, bias_b0_mp, bias_b1_mp
                          coverage = c(cov_b0_sp, cov_b1_sp, cov_b0_mp, cov_b1_mp))
 row.names(result_tab) <- c("b0_sp", "b1_sp", "b0_mp", "b1_mp")
 
+montecarlo_se <- sqrt((1/(500 * 499)) * sum((betas_mp$b1_mp - mean(betas_mp$b1_mp))^2))
+
 # qs_savem(betas_sp, betas_mp, ci_b0_sp, ci_b0_mp, ci_b1_sp, ci_b1_mp,
-#          file = here("BYM model results/BYM results.qs2"))
+#          montecarlo_se, file = here("BYM model results/BYM results.qs2"))
