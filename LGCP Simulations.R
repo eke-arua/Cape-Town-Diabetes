@@ -11,14 +11,14 @@ library(here)
 pop_density <- terra::rast("Cape Town population density.tif")
 pop_density <- project(pop_density, "EPSG:22234")
 
-facility_dist <- rast("Distance to healthcare facility.tif")
+facility_dist <- rast("Distance to healthcare facility.tif")/10000
 facility_dist <- project(facility_dist, "EPSG:22234")
 
 #Population density as the baseline (offset)
-baseline <- classify(scale(pop_density), cbind(-Inf, 0, 0.0001), include.lowest = TRUE)
+baseline <- classify(pop_density, cbind(-Inf, 0, 0.0001), include.lowest = TRUE)
 
 #Load the parameters
-parameter_space <- list(beta_0 = c(-12, -13, -14),
+parameter_space <- list(beta_0 = c(-13, -14, -15),
                         beta_1 = c(-0.1, -0.5, -1),
                         scale = c(100, 400, 800),
                         var = c(1, 1.5, 2)) |>
@@ -36,7 +36,7 @@ sim_list <- mclapply(seq_len(nrow(parameters)), function(i) {
 
   params <- unlist(parameters[i, ])  # Extract row as vector
 
-  eta <- log(baseline) + params[1] + (params[2] * scale(facility_dist))
+  eta <- log(baseline) + params[1] + (params[2] * facility_dist)
   intensity <- exp(eta)
 
   # Convert to an image format
@@ -54,7 +54,7 @@ sim_list <- mclapply(seq_len(nrow(parameters)), function(i) {
   )
 
   return(matern_sim)
-}, mc.cores = 7)
+}, mc.cores = 8)
 
 qs_save(sim_list, "500 factorial design simulations.qs2")
 
